@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 목사님 - 메인</title>
+    <style>
+        body { 
+            font-family: 'Apple SD Gothic Neo', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+
+            /* 배경 이미지 설정 */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("{% static 'images/main_bg.png' %}");
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed; 
+            
+            color: white; 
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 900px; /* 가로로 길어지니 폭을 조금 더 여유 있게 */
+            padding: 20px; 
+            text-align: center;
+        }
+        
+        /* ★ 핵심 수정: 무조건 가로 3개 배치 */
+        .menu-grid {
+            display: grid; /* Grid 사용 */
+            grid-template-columns: repeat(3, 1fr); /* 1:1:1 비율로 3개 나열 */
+            gap: 20px;
+            width: 100%;
+        }
+
+        /* 카드 스타일 (디자인 유지, 크기만 유연하게 변경) */
+        .menu-card {
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px);          
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px; 
+            padding: 30px 20px;
+            
+            /* width: 220px;  <-- 삭제: 고정 너비 제거 */
+            width: auto;      /* 추가: 그리드 칸에 맞춰 꽉 차게 */
+            height: 100%;     /* 높이 통일 */
+            box-sizing: border-box; /* 패딩 포함 크기 계산 */
+
+            text-decoration: none; 
+            color: white; 
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 내용 중앙 정렬 */
+        }
+
+        .menu-card:hover { 
+            background: rgba(255, 255, 255, 0.2); 
+            transform: translateY(-10px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        
+        .icon { font-size: 40px; margin-bottom: 15px; display: block; }
+        .title { font-size: 18px; font-weight: bold; margin-bottom: 10px; word-break: keep-all; }
+        .desc { font-size: 13px; color: #ccc; line-height: 1.4; word-break: keep-all; }
+        
+        .header { margin-bottom: 50px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .welcome { font-size: 28px; font-weight: bold; margin-bottom: 10px;}
+        
+        .logout-btn {
+            margin-top: 50px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #aaa;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* 모바일 대응 (화면이 너무 좁을 때만 세로로 바뀜 - 필요 없으면 삭제 가능) */
+        @media (max-width: 600px) {
+            .menu-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="welcome">✝️ 환영합니다, {{ user.username }} 성도님</div>
+        <div style="font-size:16px; color:#ddd;">오늘도 주님 안에서 평안하시길 기도합니다</div>
+    </div>
+
+    <div class="menu-grid">
+        <a href="{% url 'chat_page' %}" class="menu-card">
+            <span class="icon">🙏</span>
+            <div class="title">AI 목사님 상담</div>
+            <div class="desc">고민이 있으신가요?<br>성경적 위로를 받아보세요</div>
+        </a>
+
+        <a href="{% url 'bible_search' %}" class="menu-card">
+            <span class="icon">📖</span>
+            <div class="title">성경 검색</div>
+            <div class="desc">필요한 말씀을<br>빠르게 찾아보세요</div>
+        </a>
+
+        <a href="{% url 'chat_history' %}" class="menu-card">
+            <span class="icon">📂</span>
+            <div class="title">이전 대화 기록</div>
+            <div class="desc">지난 상담 내용을<br>다시 확인하세요</div>
+        </a>
+    </div>
+
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">로그아웃</button>
+    </form>
+</div>
+
+</body>
+</html>

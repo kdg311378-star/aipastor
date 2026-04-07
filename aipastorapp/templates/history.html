@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상담 기록</title>
+    <style>
+        body { font-family: 'Apple SD Gothic Neo', sans-serif; background-color: #f2f2f2; padding: 20px; max-width: 700px; margin: 0 auto; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 20px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .back-btn { text-decoration: none; color: #555; font-weight: bold; }
+
+        .action-bar { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .btn { border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .delete-selected-btn { background-color: #4A90E2; color: white; }
+        .delete-selected-btn:hover { background-color: #357ABD; }
+        .delete-all-btn { background-color: #ff6b6b; color: white; }
+        .delete-all-btn:hover { background-color: #fa5252; }
+
+        .date-divider { display: flex; align-items: center; margin: 30px 0 15px 0; color: #666; font-weight: bold; font-size: 15px; }
+        .date-divider::before, .date-divider::after { content: ""; flex: 1; height: 1px; background: #ddd; margin: 0 10px; }
+
+        .session-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; gap: 15px; align-items: flex-start; }
+        .session-card:hover { border: 1px solid #4A90E2; }
+
+        .checkbox-area { padding-top: 5px; }
+        .custom-checkbox { width: 20px; height: 20px; cursor: pointer; accent-color: #4A90E2; }
+
+        .content-area { flex: 1; }
+        .title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .session-title { margin: 0; font-size: 16px; color: #333; font-weight: bold; }
+        .time-badge { background: #eee; color: #555; font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+        
+        .msg { font-size: 13px; margin-bottom: 4px; color: #555; }
+        .sender { font-weight: bold; color: #4A90E2; margin-right: 5px; }
+        .sender.ai { color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2 style="margin:0;">📂 지난 상담 기록</h2>
+        <a href="{% url 'main_page' %}" class="back-btn">🏠 메인으로</a>
+    </div>
+
+    {% if sessions %}
+        <div class="action-bar">
+            <button type="button" class="btn delete-selected-btn" onclick="submitDeleteForm()">✅ 선택 삭제</button>
+            <form action="{% url 'delete_all_chat_history' %}" method="post" onsubmit="return confirm('전체 기록을 삭제하시겠습니까?');" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="btn delete-all-btn">🗑️ 전체 삭제</button>
+            </form>
+        </div>
+
+        <form id="select-delete-form" action="{% url 'delete_selected_chat_history' %}" method="post">
+            {% csrf_token %}
+
+            {% regroup sessions by created_at|date:"Y년 m월 d일 (D)" as date_list %}
+            {% for date in date_list %}
+                
+                <div class="date-divider">{{ date.grouper }}</div>
+
+                {% for session in date.list %}
+                <div class="session-card">
+                    <div class="checkbox-area">
+                        <input type="checkbox" name="selected_sessions" value="{{ session.session_id }}" class="custom-checkbox">
+                    </div>
+                    <div class="content-area">
+                        <div class="title-row">
+                            <h3 class="session-title">💬 {{ session.title }}</h3>
+                            <span class="time-badge">{{ session.created_at|date:"A h:i" }}</span>
+                        </div>
+                        
+                        <div style="background: #f9f9f9; padding: 10px; border-radius: 8px;">
+                            {% for message in session.chatmessage_set.all %}
+                                <div class="msg">
+                                    <span class="sender {% if message.sender != 'USER' %}ai{% endif %}">
+                                        {% if message.sender == 'USER' %}나{% else %}목사님{% endif %}
+                                    </span>
+                                    {{ message.message|linebreaksbr }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}
+        </form>
+
+    {% else %}
+        <div style="text-align: center; color: #888; margin-top: 100px;">
+            <p>아직 상담 기록이 없습니다.</p>
+        </div>
+    {% endif %}
+
+    <script>
+        function submitDeleteForm() {
+            const count = document.querySelectorAll('.custom-checkbox:checked').length;
+            if (count === 0) { alert("삭제할 기록을 선택해주세요."); return; }
+            if (confirm(`선택한 ${count}개의 기록을 삭제하시겠습니까?`)) {
+                document.getElementById('select-delete-form').submit();
+            }
+        }
+    </script>
+</body>
+</html>

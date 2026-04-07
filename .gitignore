@@ -1,0 +1,18 @@
+# 가상환경
+pastorenv/
+
+# 보안 및 설정 파일
+.env
+db.sqlite3
+
+# 대용량 데이터 및 모델 (매우 중요)
+chroma_db/
+models/
+
+# Python 캐시 파일
+__pycache__/
+*.pyc
+
+# 테스트 파일 (포트폴리오를 깔끔하게 하려면 제외)
+test.py
+test_ai.py
