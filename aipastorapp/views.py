@@ -51,7 +51,7 @@ try:
     ANCHOR_KNOWLEDGE = embed_model.encode("예수님 실존 역사적 증거 교리 성경 해석 삼위일체 이단")
     ANCHOR_COUNSELING = embed_model.encode("너무 우울하고 슬퍼요 인간관계 때문에 힘들고 위로가 필요해요 막막함")
     
-    print("✅ [성용님 확인] 모든 시스템이 정상적으로 초기화되었습니다.")
+    print("✅ [동규님 확인] 모든 시스템이 정상적으로 초기화되었습니다.")
 
 except Exception as e:
     print("❌ [치명적 에러] 초기화 실패. 원인 분석이 필요합니다:")
@@ -161,7 +161,7 @@ def chat_api(request):
                 if valid_memories:
                     past_memory_text = "\n".join(valid_memories)
 
-        # --- 2단계: 성경 구절 검색 (성용님 논리대로 k=3 유지해서 퀄리티 방어) ---
+        # --- 2단계: 성경 구절 검색 (동규님 논리대로 k=3 유지해서 퀄리티 방어) ---
         knowledge_mode = _classify_intent_vector(user_message)
         retrieved = _retrieve_verses_vector(user_message, k=3)
         
